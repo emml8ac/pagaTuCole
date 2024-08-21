@@ -15,3 +15,12 @@ const showHiddenPass = (loginPass, loginEye) =>{
     })
  }
  showHiddenPass('login-pass','login-eye')
+function check(e){
+    tecla = (document.all)? e.keycode : e.which;
+    if (tecla == 8 ){
+        return true;
+    }
+    pattern = /[A-Za-zñÑ]/
+    tecla_final = String.fromCharCode(tecla);
+    return pattern.test(tecla_final);
+}

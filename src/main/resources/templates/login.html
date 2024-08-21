@@ -8,42 +8,45 @@
     <title>Iniciar Sesion</title>
 </head>
 <body>
+<div class="contenedor-principal">
+    <div class="contenido"></div>
     <div class="login">
-       <img src="/image/login.jpg" alt="login image" class="login__img">
-        <div th:if="${param.error}">
-            Invalid username and password.</div>
-        <div th:if="${param.logout}">
-            You have been logged out.</div>
         <form th:action="@{/login}" method="post" class="login__form">
-         <h1 class="login__title">Login</h1>
-           <div class="login__content">
-              <div class="login__box">
-                 <i class="ri-user-3-line login__icon"></i>
-                 <div class="login__box-input">
-                    <input type="text" name="username"required class="login__input" id="login-email" placeholder="">
-                    <label for="login-email" class="login__label">Usuario</label>
-                 </div>
-              </div>
-              <div class="login__box">
-                 <i class="ri-lock-2-line login__icon"></i>
-                 <div class="login__box-input">
-                    <input type="password" name="password" class="login__input" id="login-pass" placeholder="">
-                    <label for="login-pass" class="login__label">Password</label>
-                    <i class="ri-eye-off-line login__eye" id="login-eye"></i>
-                 </div>
-              </div>
-           </div>
-           <div class="login__check">
-              <div class="login__check-group">
-                 <input type="checkbox" class="login__check-input" id="login-check">
-                 <label for="login-check" class="login__check-label">Recuerdame</label>
-              </div>
-              <a href="#" class="login__forgot">Olvidaste tu contraseña?</a>
-           </div>
+            <h1 class="login__title">Login</h1>
+            <p th:if="${param.error}">
+                Nombre de usuario o contraseña invalido.</p>
+            <p th:if="${param.logout}">
+                Has cerrado sesion</p>
+            <div class="login__content">
+                <div class="login__box">
+                    <i class="ri-user-3-line login__icon"></i>
+                    <div class="login__box-input">
+                        <input type="text" name="username" required class="login__input" id="login-email" pattern="[A-Za-z\s]+" placeholder="" onkeypress="return check(event)">
+                        <label for="login-email" class="login__label">Usuario</label>
+                    </div>
+                </div>
+                <div class="login__box">
+                    <i class="ri-lock-2-line login__icon"></i>
+                    <div class="login__box-input">
+                        <input type="password" name="password" class="login__input" id="login-pass" placeholder="">
+                        <label for="login-pass" class="login__label">Password</label>
+                        <i class="ri-eye-off-line login__eye" id="login-eye"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="login__check">
+                <div class="login__check-group">
+                    <input type="checkbox" class="login__check-input" id="remember-me"name="remember-me" >
+                    <label class="login__check-label">Recuerdame</label>
+                </div>
+                <a href="/nopass" class="login__forgot">Olvidaste tu contraseña?</a>
+            </div>
 
-           <button type="submit" value="Log in" class="login__button">Login</button>
+            <button type="submit" value="Log in" class="login__button">Login</button>
         </form>
-     </div>
+    </div>
+</div>
+
      <script src="/js/login.js"></script>
 </body>
 </html>

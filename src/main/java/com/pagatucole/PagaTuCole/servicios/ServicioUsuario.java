@@ -24,4 +24,7 @@ public class ServicioUsuario implements UserDetailsService {
         }
         return new SecurityUser(user);
     }
+    public Usuario saveUsuario(Usuario usuario) {
+        return repositorioUsuario.save(usuario);
+    }
 }

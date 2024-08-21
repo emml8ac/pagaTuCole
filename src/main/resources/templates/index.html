@@ -1,37 +1,123 @@
 <!DOCTYPE html>
-<html lang="es">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5" lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/css/index.css">
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet"> 
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
     <title>PagaTuCole - Bienvenido</title>
+    <style>
+        .typewriter h1,
+        .typewriter h2 {
+            display: inline-block;
+            overflow: hidden;
+            border-right: .15em solid orange;
+            white-space: nowrap;
+            margin: 0 auto;
+            letter-spacing: .15em;
+        }
+        .typewriter h2{
+            width: 0;
+        }
+        /* The typing effect */
+        @keyframes typing {
+            from {
+                width: 0
+            }
+
+            to {
+                width: 100%
+            }
+        }
+
+
+        /* The typewriter cursor effect */
+        @keyframes blink-caret {
+
+            from,
+            to {
+                border-color: transparent
+            }
+
+            50% {
+                border-color: orange;
+            }
+        }
+        .typewriter h1 {
+            animation:
+                    typing 3s steps(40, end),
+                    blink-caret .75s step-end 3s;
+                    border-color: transparent;
+
+        }
+
+        /* Animación para el span que empieza después del h1 */
+        .typewriter h2 {
+            animation:
+                    typing 3s steps(40, end),
+            blink-caret .75s step-end infinite;
+            animation-delay: 3s; /* Empieza después de que termine la animación del h1 */
+            animation-fill-mode: forwards;
+        }
+        .typewriter span {
+            animation-fill-mode: forwards;
+        }
+
+        .typewriter span {
+            animation-fill-mode: forwards;
+    </style>
 </head>
-<body>
-    <div class="header">
-        <div class="logo">
-            <h1>PagaTuCole</h1>
-        </div>
+
+<body  class="d-flex flex-column h-100">
+<header class="bg-primary bg-gradient py-3 mb-4">
+    <div class="container d-flex justify-content-between align-items-center ">
+        <h1 class="m-0">PagaTuCole</h1>
         <nav>
-            <a href="/public/principal">Inicio</a>
-            <a href="">Mis Deudas</a>
-            <a href="#">Mis Pagos</a>
-            <a href="#"><img src="user-icon.png" alt="User" width="30"></a>
+            <a sec:authorize="!hasAuthority('ADMIN')" href="/public/principal" class="btn btn-primary mx-1 ">Inicio</a>
+            <a sec:authorize="!hasAuthority('ADMIN')" href="#" class="btn btn-primary mx-1">Mis Deudas</a>
+            <a sec:authorize="!hasAuthority('ADMIN')" href="#" class="btn btn-primary mx-1">Mis Pagos</a>
+            <a class="btn btn-primary mx-1" sec:authorize="hasAuthority('ADMIN')" href="/gestion-pagos">Gestión de Pagos</a>
+            <a class="btn btn-primary mx-1" sec:authorize="hasAuthority('ADMIN')"href="/gestion-alumnos">Gestión de Alumnos</a>
+            <a class="btn btn-primary dropdown-toggle dropdown-toggle" href="#" id="navbarDropdown" role="button"
+               data-bs-toggle="dropdown" aria-expanded="false">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
+                    <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
+                    <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
+                </svg>
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" href="/perfil">Perfil</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="/logout">Cerrar Sesión</a>
+            </div>
         </nav>
     </div>
+</header>
+<div class="container mt-5">
+        <div class="row">
+            <!-- Columna de bienvenida y detalles -->
+            <div class="col-md-6 typewriter">
+                <h1 class="bienvenido">Bienvenido,</h1>
+                <br>
+                <h2 th:text="${username}">Usuario</h2>
+                <div class="details mt-4"  sec:authorize="!hasAuthority('ADMIN')" >
+                    <p><strong>Colegio:</strong> I.E.P Mi Señor De Los Milagros</p>
+                    <p><strong>Grado:</strong> 5to Primaria</p>
+                    <p><strong>Sección:</strong> "A"</p>
+                </div>
+            </div>
 
-    <div class="container">
-        <h1>BIENVENIDO</h1>
-        <div class="details">
-            <p><strong>Alumno:</strong> Emmanuel Exequiel Ochoa Carreño</p>
-            <p><strong>Colegio:</strong> I.E.P Mi Señor De Los Milagros</p>
-            <p><strong>Grado:</strong> 5to Primaria</p>
-            <p><strong>Sección:</strong> "A"</p>
-        </div>
-        <div class="avatar">
-            <img src="/image/estudiante.png" alt="Avatar">
+            <!-- Columna de avatar -->
+            <div class="col-md-6 d-flex justify-content-center align-items-center">
+                <img src="/image/estudiante.png" alt="Avatar" class="img-fluid rounded-circle" style="max-width: 300px;">
+            </div>
         </div>
     </div>
-
+<footer class="fixed-bottom p-3 bg-light text-center">
+    <span class="text-muted">Ing. Informática 2024 - Equipo de Desarrollo - UNP</span>
+</footer>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
 </body>
+
 </html>

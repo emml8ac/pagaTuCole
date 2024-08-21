@@ -4,7 +4,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
-public class LoggControler {
+public class LoginController {
     @GetMapping("/")
     String principal() {
         return "principal";
@@ -13,8 +13,8 @@ public class LoggControler {
     String login() {
         return "login";
     }
-    @GetMapping("/index")
-    String index(){
-        return "index";
+    @GetMapping("/nopass")
+    public String forgotPasss() {
+        return "NoPass";
     }
 }

@@ -4,6 +4,8 @@ body {
     background-color: #5a95bd;
     margin: 0;
     padding: 0;
+    display: flex;
+    flex-direction: column;
 }
 .header {
     background-color: #a4c3d1;
@@ -25,36 +27,44 @@ body {
     font-weight: bold;
 }
 .container {
+
+    height: 20%;
+    flex: 1 ;
+    display: flex;
     text-align: center;
     color: white;
     padding: 20px;
 }
-.container h1 {
-
-    font-size: 40px;
-    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
-    margin-bottom: 20px;
+.bienvenido{
+    flex: 1;
+    text-align: left;
+    font-size: 50px;
+}
+.right-container{
+   margin-right: 20%;
 }
 .details {
-    font-size: 18px;
+    flex: 1;
+    font-size: 35px;
     text-align: left;
     background-color: transparent;
     color: #333;
-    display: inline-block;
-    padding: 20px;
     border-radius: 10px;
     margin-left: 0;
 }
 .details p {
     margin: 10px 0;
+    
 }
 .avatar {
+    height: 30%;
+    flex: 1;
+    order: 2;
     background-color: yellow;
     border-radius: 50%;
-    display: inline-block;
-    padding: 20px;
-    margin: 40px;
+    padding: 50px;
+    
 }
-.avatar img {
-    height: 100px;
+.avatar img{
+    height: 10%;
 }

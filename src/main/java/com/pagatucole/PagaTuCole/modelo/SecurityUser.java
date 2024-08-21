@@ -27,4 +27,7 @@ public class SecurityUser implements UserDetails {
     public String getUsername() {
         return usuario.getUsername();
     }
+    public Usuario getUsuario(){
+        return usuario;
+    }
 }
