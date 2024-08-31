@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5" lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <title>PagaTuCole - Gestión de Alumnos</title>
+    <style>
+        /* Aquí incluirás los estilos adicionales si es necesario */
+        .typewriter h1,
+        .typewriter h2 {
+            display: inline-block;
+            overflow: hidden;
+            border-right: .15em solid orange;
+            white-space: nowrap;
+            margin: 0 auto;
+            letter-spacing: .15em;
+        }
+
+        .typewriter h2 {
+            width: 0;
+        }
+
+        @keyframes typing {
+            from {
+                width: 0
+            }
+
+            to {
+                width: 100%
+            }
+        }
+
+        @keyframes blink-caret {
+            from,
+            to {
+                border-color: transparent
+            }
+
+            50% {
+                border-color: orange;
+            }
+        }
+
+        .typewriter h1 {
+            animation:
+                    typing 3s steps(40, end),
+                    blink-caret .75s step-end 3s;
+            border-color: transparent;
+        }
+
+        .typewriter h2 {
+            animation:
+                    typing 3s steps(40, end),
+                    blink-caret .75s step-end infinite;
+            animation-delay: 3s;
+            animation-fill-mode: forwards;
+        }
+
+        .typewriter span {
+            animation-fill-mode: forwards;
+        }
+    </style>
+</head>
+
+<body class="d-flex flex-column h-100">
+<!-- Header -->
+    <header class="bg-primary bg-gradient py-3 mb-4">
+        <div class="container d-flex justify-content-between align-items-center">
+            <h1 class="m-0">PagaTuCole</h1>
+            <nav>
+                <a sec:authorize="!hasAuthority('ADMIN')" href="/index" class="btn btn-primary mx-1">Inicio</a>
+                <a sec:authorize="!hasAuthority('ADMIN')" href="#" class="btn btn-primary mx-1">Mis Deudas</a>
+                <a sec:authorize="!hasAuthority('ADMIN')" href="#" class="btn btn-primary mx-1">Mis Pagos</a>
+                <a class="btn btn-primary mx-1" sec:authorize="hasAuthority('ADMIN')" href="/gestion-pagos">Gestión de
+                    Pagos</a>
+                <a class="btn btn-primary mx-1" sec:authorize="hasAuthority('ADMIN')" href="/gestion-alumnos">Gestión de
+                    Alumnos</a>
+                <a class="btn btn-primary dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                data-bs-toggle="dropdown" aria-expanded="false">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                        class="bi bi-person-circle" viewBox="0 0 16 16">
+                        <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0" />
+                        <path fill-rule="evenodd"
+                            d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1" />
+                    </svg>
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href="/perfil">Perfil</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="/logout">Cerrar Sesión</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+<!-- Gestión Alumnos -->
+<div class="container mt-5">
+    <!-- Título -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2>Gestión de Alumnos</h2>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form th:action="@{/gestion-alumnos/listar}" method="post" id="filtrosForm">
+                <div class="row mb-3">
+                    <div class="col-md-3">
+                        <select id="niveles" name="nivel" class="form-select">
+                            <option  value="">Seleccione Nivel</option>
+                            <option th:selected="${nivelSeleccionado == 'Inicial'}" value="Inicial">Inicial</option>
+                            <option th:selected="${nivelSeleccionado == 'Primaria'}"value="Primaria">Primaria</option>
+                            <option th:selected="${nivelSeleccionado == 'Secundaria'}" value="Secundaria">Secundaria</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select id="grados" name="grado" class="form-select" disabled>
+                            <option value="">Seleccione Grado</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select id="secciones" name="seccion" class="form-select" disabled>
+                            <option value="">Seleccione Sección</option>
+                            <option th:selected="${seccionSeleccionado=='UNICA'}" value="UNICA">UNICA</option>
+                            <option th:selected="${seccionSeleccionado=='A'}" value="A">A</option>
+                            <option th:selected="${seccionSeleccionado=='B'}" value="B">B</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 d-flex justify-content-end">
+                        <button type="submit" class="btn btn-primary w-100">Listar Estudiantes</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Búsqueda y Botón Nuevo Alumno -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-9">
+                    <input id="search" class="form-control" type="text" placeholder="Buscar por nombre" disabled>
+                </div>
+                <div class="col-md-3 d-flex justify-content-end">
+                    <button id="buscarNombreBtn" class="btn btn-secondary w-100" disabled>Buscar por Nombre</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla de Estudiantes -->
+    <div class="card">
+        <div class="card-body">
+            <div id="studentList">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>DNI</th>
+                        <th>Nombre</th>
+                        <th>Sección</th>
+                        <th>Nivel</th>
+                        <th>Grado</th>
+                        <th>Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody id="students-primaria">
+                    <!-- Los datos de estudiantes se llenarán dinámicamente -->
+                    <tr th:each="alumno : ${alumnos}">
+                        <td th:text="${alumno.dni}"></td>
+                        <td th:text="${alumno.getPersona().nombreCom()}"></td>
+                        <td th:text="${alumno.seccion}"></td>
+                        <td th:text="${alumno.nivel}"></td>
+                        <td th:text="${alumno.grado}"></td>
+                        <td>
+                            <a data-bs-toggle="modal" data-bs-target="#editarAlumnoModal" class="btn btn-warning btn-sm">Editar</a>
+                            <a data-bs-toggle="modal" data-bs-target="#eliminarAlumnoModal" class="btn btn-danger btn-sm">Eliminar</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <!-- Paginación -->
+                <nav aria-label="Page navigation example">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item"><a class="page-link" href="#">Anterior</a></li>
+                        <li class="page-item"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link" href="#">Siguiente</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botón Nuevo Alumno -->
+    <div class="d-flex justify-content-end mt-4">
+        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#nuevoAlumnoModal">Nuevo Alumno</button>
+    </div>
+</div>
+
+<!-- Modal, agregar Alumno -->
+<div class="modal fade" id="nuevoAlumnoModal" tabindex="-1" aria-labelledby="nuevoAlumnoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="nuevoAlumnoModalLabel">Inscribir Nuevo Alumno</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <form id="alumnoForm" th:action="@{/gestion-alumnos/save}" th:object="${persona}" method="post" class="needs-validation" novalidate>
+                    <div class="mb-3">
+                        <label for="dni" class="form-label">DNI:</label>
+                        <input th:field="*{dni}" type="text" class="form-control" id="dni" name="dni" maxlength="8" required>
+                        <div class="invalid-feedback">Dato inválido. El DNI debe ser un número de 8 dígitos.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="nombre" class="form-label">Nombre:</label>
+                        <input th:field="*{nombre}" type="text" class="form-control" id="nombre" name="nombre" required>
+                        <div class="invalid-feedback">Dato inválido. El nombre solo debe contener letras.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="apellidoPaterno" class="form-label">Apellido Paterno:</label>
+                        <input th:field="*{apPaterno}" type="text" class="form-control" id="apellidoPaterno" name="apellidoPaterno" required>
+                        <div class="invalid-feedback">Dato inválido. El apellido paterno solo debe contener letras.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="apellidoMaterno" class="form-label">Apellido Materno:</label>
+                        <input th:field="*{apMaterno}" type="text" class="form-control" id="apellidoMaterno" name="apellidoMaterno" required>
+                        <div class="invalid-feedback">Dato inválido. El apellido materno solo debe contener letras.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="direccion" class="form-label">Dirección:</label>
+                        <input th:field="*{direccion}" type="text" class="form-control" id="direccion" name="direccion" required>
+                        <div class="invalid-feedback">Dato inválido. La dirección solo debe contener letras y números.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email:</label>
+                        <input th:field="*{email}" type="email" class="form-control" id="email" name="email" required>
+                        <div class="invalid-feedback">Dato inválido. Por favor, ingresa un email válido.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="telefono" class="form-label">Teléfono:</label>
+                        <input th:field="*{telefono}" type="tel" class="form-control" id="telefono" name="telefono" maxlength="9" required>
+                        <div class="invalid-feedback">Dato inválido. El teléfono debe contener 9 dígitos y empezar con 9.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="nivelAlumno" class="form-label">Nivel:</label>
+                        <select id="nivelAlumno" name="nivel" class="form-select" required>
+                            <option value="">Seleccione un nivel</option>
+                            <option value="Inicial">Inicial</option>
+                            <option value="Primaria">Primaria</option>
+                            <option value="Secundaria">Secundaria</option>
+                        </select>
+                        <div class="invalid-feedback">Por favor, seleccione un nivel.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="gradoAlumno" class="form-label">Grado:</label>
+                        <select id="gradoAlumno" name="grado" class="form-select" disabled required>
+                            <option value="">Seleccione un grado</option>
+                        </select>
+                        <div class="invalid-feedback">Por favor, seleccione un grado.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="seccionAlumno" class="form-label">Sección:</label>
+                        <select id="seccionAlumno" name="seccion" class="form-select" disabled required>
+                            <option value="">Seleccione una sección</option>
+                            <option value="UNICA">UNICA</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                        </select>
+                        <div class="invalid-feedback">Por favor, seleccione una sección.</div>
+                    </div>
+                    <div class="button-group">
+                        <button type="reset" class="btn btn-secondary">Limpiar</button>
+                        <button type="submit" class="btn btn-primary">Registrar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal Editar Alumno -->
+<div class="modal fade" id="editarAlumnoModal" tabindex="-1" aria-labelledby="editarAlumnoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editarAlumnoModalLabel">Editar Alumno</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editarAlumnoForm" th:action="@{/update}" th:object="${persona}" method="post" class="needs-validation" novalidate>
+                    <div class="mb-3">
+                        <label for="editDni" class="form-label">DNI:</label>
+                        <input th:field="*{dni}" type="text" class="form-control" id="editDni" name="dni" maxlength="8" disabled>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editNombre" class="form-label">Nombre:</label>
+                        <input th:field="*{nombre}" type="text" class="form-control" id="editNombre" name="nombre" required>
+                        <div class="invalid-feedback">Dato inválido. El nombre solo debe contener letras.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editApellidoPaterno" class="form-label">Apellido Paterno:</label>
+                        <input th:field="*{apPaterno}" type="text" class="form-control" id="editApellidoPaterno" name="apellidoPaterno" required>
+                        <div class="invalid-feedback">Dato inválido. El apellido paterno solo debe contener letras.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editApellidoMaterno" class="form-label">Apellido Materno:</label>
+                        <input th:field="*{apMaterno}" type="text" class="form-control" id="editApellidoMaterno" name="apellidoMaterno" required>
+                        <div class="invalid-feedback">Dato inválido. El apellido materno solo debe contener letras.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="direccion" class="form-label">Dirección:</label>
+                        <input th:field="*{direccion}" type="text" class="form-control" id="direccion" name="direccion" required>
+                        <div class="invalid-feedback">Dato inválido. La dirección solo debe contener letras y números.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email:</label>
+                        <input th:field="*{email}" type="email" class="form-control" id="email" name="email" required>
+                        <div class="invalid-feedback">Dato inválido. Por favor, ingresa un email válido.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="telefono" class="form-label">Teléfono:</label>
+                        <input th:field="*{telefono}" type="tel" class="form-control" id="telefono" name="telefono" maxlength="9" required>
+                        <div class="invalid-feedback">Dato inválido. El teléfono debe contener 9 dígitos y empezar con 9.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editNivelAlumno" class="form-label">Nivel:</label>
+                        <select id="editNivelAlumno" name="nivel" class="form-select" required>
+                            <option value="">Seleccione un nivel</option>
+                            <option value="Inicial">Inicial</option>
+                            <option value="Primaria">Primaria</option>
+                            <option value="Secundaria">Secundaria</option>
+                        </select>
+                        <div class="invalid-feedback">Por favor, seleccione un nivel.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editGradoAlumno" class="form-label">Grado:</label>
+                        <select id="editGradoAlumno" name="grado" class="form-select" disabled required>
+                            <option value="">Seleccione un grado</option>
+                        </select>
+                        <div class="invalid-feedback">Por favor, seleccione un grado.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editSeccionAlumno" class="form-label">Sección:</label>
+                        <select id="editSeccionAlumno" name="seccion" class="form-select" disabled required>
+                            <option value="">Seleccione una sección</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                        </select>
+                        <div class="invalid-feedback">Por favor, seleccione una sección.</div>
+                    </div>
+                    <div class="button-group">
+                        <button type="reset" class="btn btn-secondary">Limpiar</button>
+                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal Confirmar Eliminación -->
+<div class="modal fade" id="eliminarAlumnoModal" tabindex="-1" aria-labelledby="eliminarAlumnoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="eliminarAlumnoModalLabel">Confirmar Eliminación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <p>¿Está seguro de que desea eliminar a este alumno?</p>
+                <form id="eliminarAlumnoForm" th:action="@{/delete}" method="post">
+                    <input type="hidden" id="deleteAlumnoId" name="dni">
+                    <div class="button-group">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-danger">Eliminar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <footer class="fixed-bottom p-3 bg-light text-center">
+    <span class="text-muted">Ing. Informática 2024 - Equipo de Desarrollo - UNP</span>
+</footer>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+            crossorigin="anonymous"></script>
+            <script>
+                document.getElementById('nuevoAlumnoForm').addEventListener('submit', function (event) {
+                    event.preventDefault();
+    
+                    // Aquí puedes agregar el código para enviar los datos al servidor
+                    // o para actualizar la lista de alumnos localmente.
+    
+                    // Cerrar el modal después de guardar
+                    var modalElement = document.getElementById('nuevoAlumnoModal');
+                    var modal = bootstrap.Modal.getInstance(modalElement);
+                    modal.hide();
+    
+                    // Limpiar el formulario
+                    this.reset();
+                    // Opcional: Actualizar la lista de alumnos en la página
+                });
+    
+            </script>
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+        const dniInput = document.getElementById('dni');
+        const telefonoInput = document.getElementById('telefono');
+        const nameInputs = ['nombre', 'apellidoPaterno', 'apellidoMaterno'];
+    
+        // Restringir entrada a solo números para DNI y Teléfono
+        dniInput.addEventListener('input', function (event) {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+    
+        telefonoInput.addEventListener('input', function (event) {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+    
+        // Restringir entrada a solo letras y espacios para Nombres y Apellidos
+        nameInputs.forEach(function (id) {
+            const input = document.getElementById(id);
+            input.addEventListener('input', function (event) {
+                this.value = this.value.replace(/[^a-zA-ZñÑáéíóúÁÉÍÓÚ\s]/g, '');
+            });
+        });
+    
+        // Validación personalizada en el envío del formulario
+        const alumnoForm = document.getElementById('alumnoForm');
+        alumnoForm.addEventListener('submit', function (event) {
+            if (!validateForm()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            alumnoForm.classList.add('was-validated');
+        });
+    
+        function validateForm() {
+            let isValid = true;
+    
+            // Validar DNI (8 dígitos)
+            if (dniInput.value.length !== 8) {
+                dniInput.setCustomValidity('Dato inválido. El DNI debe ser un número de 8 dígitos.');
+                isValid = false;
+            } else {
+                dniInput.setCustomValidity('');
+            }
+    
+            // Validar Teléfono (9 dígitos, debe empezar con 9)
+            if (!/^9\d{8}$/.test(telefonoInput.value)) {
+                telefonoInput.setCustomValidity('Dato inválido. El teléfono debe contener 9 dígitos y empezar con 9.');
+                isValid = false;
+            } else {
+                telefonoInput.setCustomValidity('');
+            }
+    
+            // Validar Nombre y Apellidos (sin caracteres especiales, solo letras y ñ)
+            nameInputs.forEach(function (id) {
+                const input = document.getElementById(id);
+                const value = input.value.trim();
+                if (!/^[a-zA-ZñÑáéíóúÁÉÍÓÚ\s]+$/.test(value)) {
+                    input.setCustomValidity('Dato inválido. Este campo solo debe contener letras.');
+                    isValid = false;
+                } else {
+                    input.setCustomValidity('');
+                }
+            });
+    
+            return isValid;
+        }
+    });
+    
+            </script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('search');
+        const buscarNombreBtn = document.getElementById('buscarNombreBtn');
+        const studentRows = document.querySelectorAll("#students-primaria tr");
+
+        // Habilitar búsqueda por nombre solo si hay estudiantes listados
+        if (studentRows.length > 0) {
+            searchInput.disabled = false;
+            buscarNombreBtn.disabled = false;
+            buscarNombreBtn.classList.remove("btn-secondary");
+            buscarNombreBtn.classList.add("btn-primary");
+        }
+
+        buscarNombreBtn.addEventListener('click', function () {
+            const search = searchInput.value.toLowerCase();
+
+            if (search.trim() === "") {
+                alert("Por favor, ingrese un nombre para buscar.");
+                return;
+            }
+
+            // Mostrar solo las filas que coincidan con el nombre buscado
+            studentRows.forEach(function (row) {
+                const nombreText = row.cells[1].textContent.toLowerCase();
+                const showRow = nombreText.includes(search);
+                row.style.display = showRow ? "" : "none";
+            });
+        });
+    });
+
+
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const nivelInput = document.getElementById('niveles');
+        const gradoInput = document.getElementById('grados');
+        const seccionInput = document.getElementById('secciones');
+        const listarEstudiantesBtn = document.getElementById('listarEstudiantesBtn');
+
+        // Deshabilitar grado y sección inicialmente
+        gradoInput.disabled = true;
+        seccionInput.disabled = true;
+
+        nivelInput.addEventListener('change', function () {
+            const nivel = nivelInput.value;
+
+            // Resetear el select de grados
+            gradoInput.innerHTML = '<option value="">Seleccione Grado</option>';
+            gradoInput.disabled = nivel === "";
+
+            // Llenar las opciones de grados según el nivel seleccionado
+            if (nivel === "Primaria") {
+                for (let i = 1; i <= 6; i++) {
+                    gradoInput.innerHTML += `<option value="${i}">${i}° Grado </option>`;
+                }
+            } else if (nivel === "Inicial") {
+                for (let i = 3; i <= 5; i++) {
+                    gradoInput.innerHTML += `<option value="${i}">${i} Años</option>`;
+                }
+            } else if (nivel === "Secundaria") {
+                const gradosSecundaria = ["I Secundaria", "II Secundaria", "III Secundaria", "IV Secundaria", "V Secundaria"];
+                gradosSecundaria.forEach((grado, index) => {
+                    gradoInput.innerHTML += `<option value="${index + 1}">${grado}</option>`;
+                });
+            }
+
+            // Habilitar el botón Listar Estudiantes si hay un nivel seleccionado
+            listarEstudiantesBtn.disabled = nivel === "";
+        });
+
+        // Habilitar la sección cuando se selecciona un grado
+        gradoInput.addEventListener('change', function () {
+            seccionInput.disabled = gradoInput.value === "";
+        });
+
+        // Habilitar el botón de listar solo si todas las opciones están seleccionadas
+        const formElements = [nivelInput, gradoInput, seccionInput];
+        formElements.forEach(element => {
+            element.addEventListener('change', function () {
+                listarEstudiantesBtn.disabled = formElements.some(elem => elem.value === "");
+            });
+        });
+    });
+
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const nivelAlumnoInput = document.getElementById('nivelAlumno');
+        const gradoAlumnoInput = document.getElementById('gradoAlumno');
+        const seccionAlumnoInput = document.getElementById('seccionAlumno');
+
+        // Deshabilitar grado y sección inicialmente
+        gradoAlumnoInput.disabled = true;
+        seccionAlumnoInput.disabled = true;
+
+        nivelAlumnoInput.addEventListener('change', function () {
+            const nivel = nivelAlumnoInput.value;
+
+            // Resetear el select de grados
+            gradoAlumnoInput.innerHTML = '<option value="">Seleccione un grado</option>';
+            gradoAlumnoInput.disabled = nivel === "";
+
+            // Llenar las opciones de grados según el nivel seleccionado
+            if (nivel === "Primaria") {
+                for (let i = 1; i <= 6; i++) {
+                    gradoAlumnoInput.innerHTML += `<option value="${i}">Grado ${i}</option>`;
+                }
+            } else if (nivel === "Inicial") {
+                for (let i = 3; i <= 5; i++) {
+                    gradoAlumnoInput.innerHTML += `<option value="${i}">${i} Años</option>`;
+                }
+            } else if (nivel === "Secundaria") {
+                const gradosSecundaria = ["I Secundaria", "II Secundaria", "III Secundaria", "IV Secundaria", "V Secundaria"];
+                gradosSecundaria.forEach((grado, index) => {
+                    gradoAlumnoInput.innerHTML += `<option value="${index + 1}">${grado}</option>`;
+                });
+            }
+        });
+
+        // Habilitar la sección cuando se selecciona un grado
+        gradoAlumnoInput.addEventListener('change', function () {
+            seccionAlumnoInput.disabled = gradoAlumnoInput.value === "";
+        });
+
+        // Habilitar el botón de registro solo si todas las opciones están seleccionadas
+        const formElements = [nivelAlumnoInput, gradoAlumnoInput, seccionAlumnoInput];
+        formElements.forEach(element => {
+            element.addEventListener('change', function () {
+                // Aquí podrías manejar la habilitación de un botón de registro si es necesario
+            });
+        });
+    });
+
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const editarAlumnoModal = document.getElementById('editarAlumnoModal');
+        const eliminarAlumnoModal = document.getElementById('eliminarAlumnoModal');
+
+        const editDniInput = document.getElementById('editDni');
+        const editNombreInput = document.getElementById('editNombre');
+        const editApellidoPaternoInput = document.getElementById('editApellidoPaterno');
+        const editApellidoMaternoInput = document.getElementById('editApellidoMaterno');
+        const editNivelInput = document.getElementById('editNivelAlumno');
+        const editGradoInput = document.getElementById('editGradoAlumno');
+        const editSeccionInput = document.getElementById('editSeccionAlumno');
+        const deleteAlumnoIdInput = document.getElementById('deleteAlumnoId');
+
+        // Configurar el modal de editar con la información del alumno seleccionado
+        document.querySelectorAll('.btn-editar').forEach(button => {
+            button.addEventListener('click', function () {
+                const alumno = JSON.parse(this.getAttribute('data-alumno'));
+                editDniInput.value = alumno.dni;
+                editNombreInput.value = alumno.nombre;
+                editApellidoPaternoInput.value = alumno.apellidoPaterno;
+                editApellidoMaternoInput.value = alumno.apellidoMaterno;
+                editNivelInput.value = alumno.nivel;
+                // Lógica para habilitar y seleccionar el grado y sección correspondientes
+                habilitarGradoSeccion(editNivelInput, editGradoInput, editSeccionInput, alumno.grado, alumno.seccion);
+                new bootstrap.Modal(editarAlumnoModal).show();
+            });
+        });
+
+        // Configurar el modal de eliminar con el DNI del alumno seleccionado
+        document.querySelectorAll('.btn-eliminar').forEach(button => {
+            button.addEventListener('click', function () {
+                const alumnoDni = this.getAttribute('data-dni');
+                deleteAlumnoIdInput.value = alumnoDni;
+                new bootstrap.Modal(eliminarAlumnoModal).show();
+            });
+        });
+
+        function habilitarGradoSeccion(nivelInput, gradoInput, seccionInput, gradoSeleccionado, seccionSeleccionada) {
+            // Resetear el select de grados
+            gradoInput.innerHTML = '<option value="">Seleccione un grado</option>';
+            gradoInput.disabled = false;
+
+            // Llenar las opciones de grados según el nivel seleccionado
+            if (nivelInput.value === "Primaria") {
+                for (let i = 1; i <= 6; i++) {
+                    gradoInput.innerHTML += `<option value="${i}" ${i == gradoSeleccionado ? 'selected' : ''}>Grado ${i}</option>`;
+                }
+            } else if (nivelInput.value === "Inicial") {
+                for (let i = 3; i <= 5; i++) {
+                    gradoInput.innerHTML += `<option value="${i}" ${i == gradoSeleccionado ? 'selected' : ''}>${i} Años</option>`;
+                }
+            } else if (nivelInput.value === "Secundaria") {
+                const gradosSecundaria = ["I Secundaria", "II Secundaria", "III Secundaria", "IV Secundaria", "V Secundaria"];
+                gradosSecundaria.forEach((grado, index) => {
+                    gradoInput.innerHTML += `<option value="${index + 1}" ${index + 1 == grado
+
+</script>
+</body>
+
+</html>

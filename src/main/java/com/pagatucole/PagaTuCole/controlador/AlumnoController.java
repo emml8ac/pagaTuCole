@@ -28,12 +28,13 @@ public class AlumnoController {
                          @RequestParam("grado") String grado,
                          @RequestParam("seccion") String seccion,
                          Model model){
-//        List<Alumno> alumnos = servicioAlumno.listar();
         model.addAttribute("alumno", new Alumno());
         model.addAttribute("persona", new Persona());
-//        model.addAttribute("alumnos", alumnos);
         List<Alumno> alumnos = servicioAlumno.filtrarAlumnos(nivel, grado, seccion);
         model.addAttribute("alumnos", alumnos);
+        model.addAttribute("nivelSeleccionado", nivel);
+        model.addAttribute("gradoSeleccionado", grado);
+        model.addAttribute("seccionSeleccionado", seccion);
         return "gestional";
     }
 
