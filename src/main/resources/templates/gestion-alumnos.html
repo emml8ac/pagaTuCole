@@ -58,15 +58,15 @@
     <div>
         <button class="btn btn-primary" onclick="window.location.href='/index'">&times;</button>
         <h2>Ingresar Alumno</h2>
-        <form th:action="@{/save}" th:object="${persona}" method="post" id="alumnoForm" action="#" class="needs-validation" novalidate>
+        <form th:action="@{/save}" th:object="${persona}" method="post" id="alumnoForm" class="needs-validation" novalidate>
             <div class="mb-3">
                 <label for="dni" class="form-label">DNI:</label>
-                <input th:field="*{dni}" type="text" class="form-control" id="dni"  name="dni" maxlength="8" required>
+                <input th:field="*{dni}" type="text" class="form-control" id="dni" name="dni" maxlength="8" required>
                 <div class="invalid-feedback">Dato inválido. El DNI debe ser un número de 8 dígitos.</div>
             </div>
             <div class="mb-3">
                 <label for="nombre" class="form-label">Nombre:</label>
-                <input th:field="*{nombre}"type="text" class="form-control" id="nombre" name="nombre" required>
+                <input th:field="*{nombre}" type="text" class="form-control" id="nombre" name="nombre" required>
                 <div class="invalid-feedback">Dato inválido. El nombre solo debe contener letras.</div>
             </div>
             <div class="mb-3">
@@ -106,9 +106,7 @@
             </div>
             <div class="mb-3">
                 <label for="grado" class="form-label">Grado:</label>
-
                 <input th:value="${alumno.grado}" type="text" class="form-control" id="grado" name="grado" required>
-
                 <div class="invalid-feedback">Por favor, selecciona un grado.</div>
             </div>
             <div class="mb-3">
@@ -121,111 +119,82 @@
                 <button type="submit" class="btn btn-primary">Registrar</button>
             </div>
         </form>
+        
     </div>
 </div>
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
-
 <script>
-    document.getElementById('alumnoForm').addEventListener('submit', function (e) {
+    document.addEventListener('DOMContentLoaded', function () {
+    const dniInput = document.getElementById('dni');
+    const telefonoInput = document.getElementById('telefono');
+    const nameInputs = ['nombre', 'apellidoPaterno', 'apellidoMaterno'];
+
+    // Restringir entrada a solo números para DNI y Teléfono
+    dniInput.addEventListener('input', function (event) {
+        this.value = this.value.replace(/[^0-9]/g, '');
+    });
+
+    telefonoInput.addEventListener('input', function (event) {
+        this.value = this.value.replace(/[^0-9]/g, '');
+    });
+
+    // Restringir entrada a solo letras y espacios para Nombres y Apellidos
+    nameInputs.forEach(function (id) {
+        const input = document.getElementById(id);
+        input.addEventListener('input', function (event) {
+            this.value = this.value.replace(/[^a-zA-ZñÑáéíóúÁÉÍÓÚ\s]/g, '');
+        });
+    });
+
+    // Validación personalizada en el envío del formulario
+    const alumnoForm = document.getElementById('alumnoForm');
+    alumnoForm.addEventListener('submit', function (event) {
+        if (!validateForm()) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        alumnoForm.classList.add('was-validated');
+    });
+
+    function validateForm() {
         let isValid = true;
 
-        // Validación de DNI
-        const dni = document.getElementById('dni');
-        if (!/^\d{8}$/.test(dni.value)) {
+        // Validar DNI (8 dígitos)
+        if (dniInput.value.length !== 8) {
+            dniInput.setCustomValidity('Dato inválido. El DNI debe ser un número de 8 dígitos.');
             isValid = false;
-            dni.classList.add('is-invalid');
         } else {
-            dni.classList.remove('is-invalid');
+            dniInput.setCustomValidity('');
         }
 
-        // Validación de Nombre
-        const nombre = document.getElementById('nombre');
-        if (!/^[a-zA-Z\s]+$/.test(nombre.value)) {
+        // Validar Teléfono (9 dígitos, debe empezar con 9)
+        if (!/^9\d{8}$/.test(telefonoInput.value)) {
+            telefonoInput.setCustomValidity('Dato inválido. El teléfono debe contener 9 dígitos y empezar con 9.');
             isValid = false;
-            nombre.classList.add('is-invalid');
         } else {
-            nombre.classList.remove('is-invalid');
+            telefonoInput.setCustomValidity('');
         }
 
-        // Validación de Apellido Paterno
-        const apellidoPaterno = document.getElementById('apellidoPaterno');
-        if (!/^[a-zA-Z\s]+$/.test(apellidoPaterno.value)) {
-            isValid = false;
-            apellidoPaterno.classList.add('is-invalid');
-        } else {
-            apellidoPaterno.classList.remove('is-invalid');
-        }
+        // Validar Nombre y Apellidos (sin caracteres especiales, solo letras y ñ)
+        nameInputs.forEach(function (id) {
+            const input = document.getElementById(id);
+            const value = input.value.trim();
+            if (!/^[a-zA-ZñÑáéíóúÁÉÍÓÚ\s]+$/.test(value)) {
+                input.setCustomValidity('Dato inválido. Este campo solo debe contener letras.');
+                isValid = false;
+            } else {
+                input.setCustomValidity('');
+            }
+        });
 
-        // Validación de Apellido Materno
-        const apellidoMaterno = document.getElementById('apellidoMaterno');
-        if (!/^[a-zA-Z\s]+$/.test(apellidoMaterno.value)) {
-            isValid = false;
-            apellidoMaterno.classList.add('is-invalid');
-        } else {
-            apellidoMaterno.classList.remove('is-invalid');
-        }
+        return isValid;
+    }
+});
 
-        // Validación de Dirección
-        const direccion = document.getElementById('direccion');
-        if (!/^[a-zA-Z0-9\s]+$/.test(direccion.value)) {
-            isValid = false;
-            direccion.classList.add('is-invalid');
-        } else {
-            direccion.classList.remove('is-invalid');
-        }
-
-        // Validación de Email
-        const email = document.getElementById('email');
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) {
-            isValid = false;
-            email.classList.add('is-invalid');
-        } else {
-            email.classList.remove('is-invalid');
-        }
-
-        // Validación de Teléfono
-        const telefono = document.getElementById('telefono');
-        if (!/^9\d{8}$/.test(telefono.value)) {
-            isValid = false;
-            telefono.classList.add('is-invalid');
-        } else {
-            telefono.classList.remove('is-invalid');
-        }
-
-        // Validación de Nivel
-        const nivel = document.getElementById('nivel');
-        if (nivel.value === "") {
-            isValid = false;
-            nivel.classList.add('is-invalid');
-        } else {
-            nivel.classList.remove('is-invalid');
-        }
-
-        // Validación de Grado
-        const grado = document.getElementById('grado');
-        if (grado.value === "") {
-            isValid = false;
-            grado.classList.add('is-invalid');
-        } else {
-            grado.classList.remove('is-invalid');
-        }
-
-        // Validación de Sección
-        const seccion = document.getElementById('seccion');
-        if (!/^[a-zA-Z\s]+$/.test(seccion.value)) {
-            isValid = false;
-            seccion.classList.add('is-invalid');
-        } else {
-            seccion.classList.remove('is-invalid');
-        }
-
-        if (!isValid) {
-            e.preventDefault();
-        }
-    });
 </script>
+
 </body>
 
 </html>

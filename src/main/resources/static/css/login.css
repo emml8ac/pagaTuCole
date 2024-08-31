@@ -81,7 +81,6 @@ img {
 }
 .login__form {
   position: relative;
-  background:linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(75,9,121,1) 35%, rgba(0,212,255,1) 100%);
   border: 2px solid var(--white-color);
   margin-inline: 1.5rem;
   padding: 2.5rem 1.5rem;

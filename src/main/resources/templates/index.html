@@ -73,7 +73,7 @@
     <div class="container d-flex justify-content-between align-items-center ">
         <h1 class="m-0">PagaTuCole</h1>
         <nav>
-            <a sec:authorize="!hasAuthority('ADMIN')" href="/public/principal" class="btn btn-primary mx-1 ">Inicio</a>
+            <a sec:authorize="!hasAuthority('ADMIN')" href="/index" class="btn btn-primary mx-1 ">Inicio</a>
             <a sec:authorize="!hasAuthority('ADMIN')" href="#" class="btn btn-primary mx-1">Mis Deudas</a>
             <a sec:authorize="!hasAuthority('ADMIN')" href="#" class="btn btn-primary mx-1">Mis Pagos</a>
             <a class="btn btn-primary mx-1" sec:authorize="hasAuthority('ADMIN')" href="/gestion-pagos">Gestión de Pagos</a>

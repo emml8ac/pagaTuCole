@@ -8,14 +8,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import java.util.ArrayList;
+
 @Service
 @RequiredArgsConstructor
 public class ServicioUsuario implements UserDetailsService {
     @Autowired
     private RepositorioUsuario repositorioUsuario;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Usuario user = repositorioUsuario.findByUsername(username);
@@ -24,7 +27,18 @@ public class ServicioUsuario implements UserDetailsService {
         }
         return new SecurityUser(user);
     }
-    public Usuario saveUsuario(Usuario usuario) {
-        return repositorioUsuario.save(usuario);
-    }
+    public void actualizarPasswordPorDni(String username) {
+        // Encuentra el usuario con el mismo id_usuario que el DNI
+        Usuario usuario = repositorioUsuario.findByUsername(username);
+
+        if (usuario != null) {
+            // Verifica si la contraseña no está hasheada (ejemplo: no empieza con $2)
+            if (!usuario.getPassword().startsWith("$2")) {
+                // Hashea la contraseña y actualiza el usuario
+                String hashedPassword = passwordEncoder.encode(usuario.getPassword());
+                usuario.setPassword(hashedPassword);
+                repositorioUsuario.save(usuario);
+            }
+        }
+}
 }

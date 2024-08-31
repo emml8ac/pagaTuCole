@@ -7,22 +7,34 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Controller
-
+@RequestMapping("/gestion-alumnos")
 public class AlumnoController {
     @Autowired
     private ServicioAlumno servicioAlumno;
     @PreAuthorize("hasAuthority('ADMIN')")
-    @GetMapping("/gestion-alumnos")
-    public String showForm(Model model) {
+    @GetMapping
+    public String paginaGestion(Model model) {
         model.addAttribute("alumno", new Alumno());
         model.addAttribute("persona", new Persona());
-        return "gestion-alumnos";
+        return "gestional";
+    }
+    @PostMapping("/listar")
+    public String listar(@RequestParam("nivel") String nivel,
+                         @RequestParam("grado") String grado,
+                         @RequestParam("seccion") String seccion,
+                         Model model){
+//        List<Alumno> alumnos = servicioAlumno.listar();
+        model.addAttribute("alumno", new Alumno());
+        model.addAttribute("persona", new Persona());
+//        model.addAttribute("alumnos", alumnos);
+        List<Alumno> alumnos = servicioAlumno.filtrarAlumnos(nivel, grado, seccion);
+        model.addAttribute("alumnos", alumnos);
+        return "gestional";
     }
 
     @PostMapping("/save")

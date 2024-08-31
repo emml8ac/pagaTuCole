@@ -15,8 +15,6 @@ public class Usuario {
     @Id
     @GeneratedValue
     private String id;
-//    @Column(name="id_usuario")
-//    private String id_usuario;
     @Column(name="usuario")
     private String username;
     @Column(name="contraseña")

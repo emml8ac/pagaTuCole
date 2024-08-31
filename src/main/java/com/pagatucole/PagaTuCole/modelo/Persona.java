@@ -26,4 +26,7 @@ public class Persona {
     private String email;
     @Column(name="telefono")
     private String telefono;
+    public String nombreCom(){
+        return this.nombre+' '+this.getApPaterno()+' '+this.getApMaterno();
+    }
 }
