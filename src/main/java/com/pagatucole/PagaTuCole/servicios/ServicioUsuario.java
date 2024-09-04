@@ -41,4 +41,8 @@ public class ServicioUsuario implements UserDetailsService {
             }
         }
 }
+
+    public Usuario findByDni(String dni) {
+        return repositorioUsuario.findByuserid(dni);
+    }
 }

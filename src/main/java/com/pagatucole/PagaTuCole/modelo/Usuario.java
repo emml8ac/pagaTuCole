@@ -13,8 +13,8 @@ import lombok.NoArgsConstructor;
 @Data
 public class Usuario {
     @Id
-    @GeneratedValue
-    private String id;
+    @Column(name="id_usuario")
+    private String userid;
     @Column(name="usuario")
     private String username;
     @Column(name="contraseña")

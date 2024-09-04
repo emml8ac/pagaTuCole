@@ -7,6 +7,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface RepositorioUsuario extends CrudRepository<Usuario,Long> {
     Usuario findByUsername(String username);
+    Usuario findByuserid(String id_usuario);
+
     @Modifying
     @Query("update Usuario set password = password where username = username")
     void updatePass(String username, String password);
