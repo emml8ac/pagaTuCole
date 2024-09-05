@@ -23,54 +23,5 @@ public class Alumno {
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "dni",insertable=false, updatable=false)
     private Persona persona;
-//    public Integer getId() {
-//        return id;
-//    }
-//
-//    public void setId(Integer id) {
-//        this.id = id;
-//    }
-//
-//    public String getDni() {
-//        return dni;
-//    }
-//
-//    public void setDni(String dni) {
-//        this.dni = dni;
-//    }
-//
-//    public String getSeccion() {
-//        return seccion;
-//    }
-//
-//    public void setSeccion(String seccion) {
-//        this.seccion = seccion;
-//    }
-//
-//    public String getNivel() {
-//        return nivel;
-//    }
-//
-//    public void setNivel(String nivel) {
-//        this.nivel = nivel;
-//    }
-//
-//    public String getGrado() {
-//        return grado;
-//    }
-//
-//    public void setGrado(String grado) {
-//        this.grado = grado;
-//    }
-//
-//    public Persona getPersona() {
-//        return persona;
-//    }
-//
-//    public void setPersona(Persona persona) {
-//        this.persona = persona;
-//    }
-//
-//
 
 }

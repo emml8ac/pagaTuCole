@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil de Estudiante</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<style>
+    body {
+        background-color: #f0f2f5;
+    }
+
+    .modal-content {
+        background-color: #dde0e3;
+    }
+
+    .modal-header {
+        background-color: rgb(173, 201, 242);
+        color: #333;
+    }
+
+    #profile-photo {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        margin-bottom: 15px;
+    }
+
+    .apartados {
+        margin-top: 20px;
+        font-weight: bold;
+        color: #0a3764;
+    }
+
+    input[disabled] {
+        background-color: #f8f9fa;
+    }
+</style>
+<body>
+<header class="bg-primary bg-gradient py-3 mb-4">
+    <div class="container d-flex justify-content-between align-items-center ">
+        <h1 class="m-0">PagaTuCole</h1>
+        <nav>
+            <a sec:authorize="!hasAuthority('ADMIN')" href="/index" class="btn btn-primary mx-1 ">Inicio</a>
+            <a sec:authorize="!hasAuthority('ADMIN')" href="#" class="btn btn-primary mx-1">Mis Deudas</a>
+            <a sec:authorize="!hasAuthority('ADMIN')" href="#" class="btn btn-primary mx-1">Mis Pagos</a>
+            <a class="btn btn-primary mx-1" sec:authorize="hasAuthority('ADMIN')" href="/gestion-pagos">Gestión de Pagos</a>
+            <a class="btn btn-primary mx-1" sec:authorize="hasAuthority('ADMIN')"href="/gestion-alumnos">Gestión de Alumnos</a>
+            <a class="btn btn-primary dropdown-toggle dropdown-toggle" href="#" id="navbarDropdown" role="button"
+               data-bs-toggle="dropdown" aria-expanded="false">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
+                    <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
+                    <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
+                </svg>
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" href="/perfil">Perfil</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="/logout">Cerrar Sesión</a>
+            </div>
+        </nav>
+    </div>
+</header>
+
+<div class="container">
+    <div class="card">
+        <div class="card-header text-center">
+            <h2>Perfil de Estudiante</h2>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4 text-center">
+                    <img src="/image/graduado.png" class="img-fluid rounded-circle" alt="Foto de perfil" id="profile-photo">
+                </div>
+                <div class="col-md-8">
+                    <form th:action="@{/perfil/update}" method="post">
+                        <div class="form-group">
+                            <h3 class="apartados">Datos Generales</h3>
+                            <label for="alumnoNombre">Nombre:</label>
+                            <input type="text" class="form-control" id="alumnoNombre" th:value="${alumno.persona.nombre}" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="alumnoGrado">Grado:</label>
+                            <input type="text" class="form-control" id="alumnoGrado" th:value="${alumno.grado}" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="alumnoSeccion">Sección:</label>
+                            <input type="text" class="form-control" id="alumnoSeccion" th:value="${alumno.seccion}" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="alumnoUsername">Username:</label>
+                            <input type="text" class="form-control" id="alumnoUsername" th:value="${usuario.username}" disabled>
+                        </div>
+                        <div class="form-group">
+                            <h3 class="apartados">Cambiar Contraseña</h3>
+                            <label for="alumnoPassword">Nueva Contraseña:</label>
+                            <input type="password" class="form-control" id="alumnoPassword" name="password">
+                        </div>
+                        <div class="form-group">
+                            <label for="confirmPassword">Confirmar Contraseña:</label>
+                            <input type="password" class="form-control" id="confirmPassword" name="confirmPassword">
+                        </div>
+                        <div class="text-center mt-4">
+                            <a href="/index" class="btn btn-secondary">Cancelar</a>
+                            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="successModalLabel">Éxito</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <p th:text="${successMessage}"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Aceptar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal para mensajes de error -->
+<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="errorModalLabel">Error</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <p th:text="${errorMessage}"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<footer class="fixed-bottom p-3 bg-light text-center">
+    <span class="text-muted">Ing. Informática 2024 - Equipo de Desarrollo - UNP</span>
+</footer>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Verificar si hay un mensaje de éxito y mostrar el modal
+        if ([[${ successMessage != null}]]) {
+            var successModal = new bootstrap.Modal(document.getElementById('successModal'));
+            successModal.show();
+        }
+
+        // Verificar si hay un mensaje de error y mostrar el modal
+        if ([[${ errorMessage != null}]]) {
+            var errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+            errorModal.show();
+        }
+    });
+</script>
+</body>
+</html>

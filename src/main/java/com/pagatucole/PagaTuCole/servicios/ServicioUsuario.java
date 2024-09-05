@@ -42,6 +42,13 @@ public class ServicioUsuario implements UserDetailsService {
         }
 }
 
+    public void cambiarContrasena(Usuario usuario, String nuevaContrasena) {
+        usuario.setPassword(nuevaContrasena); // Asegúrate de que esté encriptada
+
+        repositorioUsuario.save(usuario);
+        actualizarPasswordPorDni(usuario.getUsername());
+    }
+
     public Usuario findByDni(String dni) {
         return repositorioUsuario.findByuserid(dni);
     }

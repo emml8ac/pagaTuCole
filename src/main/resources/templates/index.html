@@ -74,8 +74,8 @@
         <h1 class="m-0">PagaTuCole</h1>
         <nav>
             <a sec:authorize="!hasAuthority('ADMIN')" href="/index" class="btn btn-primary mx-1 ">Inicio</a>
-            <a sec:authorize="!hasAuthority('ADMIN')" href="#" class="btn btn-primary mx-1">Mis Deudas</a>
-            <a sec:authorize="!hasAuthority('ADMIN')" href="#" class="btn btn-primary mx-1">Mis Pagos</a>
+            <a sec:authorize="!hasAuthority('ADMIN')" href="/pagos" class="btn btn-primary mx-1">Mis Deudas</a>
+            <a sec:authorize="!hasAuthority('ADMIN')" href="/pagos" class="btn btn-primary mx-1">Mis Pagos</a>
             <a class="btn btn-primary mx-1" sec:authorize="hasAuthority('ADMIN')" href="/gestion-pagos">Gestión de Pagos</a>
             <a class="btn btn-primary mx-1" sec:authorize="hasAuthority('ADMIN')"href="/gestion-alumnos">Gestión de Alumnos</a>
             <a class="btn btn-primary dropdown-toggle dropdown-toggle" href="#" id="navbarDropdown" role="button"
@@ -101,9 +101,11 @@
                 <br>
                 <h2 th:text="${username}">Usuario</h2>
                 <div class="details mt-4"  sec:authorize="!hasAuthority('ADMIN')" >
-                    <p><strong>Colegio:</strong> I.E.P Mi Señor De Los Milagros</p>
-                    <p><strong>Grado:</strong> 5to Primaria</p>
-                    <p><strong>Sección:</strong> "A"</p>
+                    <p ><strong>Colegio:</strong> I.E.P Mi Señor De Los Milagros</p>
+                    <p><strong>Grado:</strong></p>
+                    <p th:text="${alumno.grado}">/p>
+                   <p><strong>Sección:</strong></p>
+                    <p th:text="${alumno.seccion}"></p>
                 </div>
             </div>
 
