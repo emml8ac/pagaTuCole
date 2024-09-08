@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cronograma de Pagos</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+
+</head>
+<body>
+<header class="bg-primary bg-gradient py-3 mb-4">
+    <div class="container d-flex justify-content-between align-items-center ">
+        <h1 class="m-0">PagaTuCole</h1>
+        <nav>
+            <a sec:authorize="!hasAuthority('ADMIN')" href="/index" class="btn btn-primary mx-1 ">Inicio</a>
+            <a sec:authorize="!hasAuthority('ADMIN')" href="/pagos" class="btn btn-primary mx-1">Mis Deudas</a>
+            <a sec:authorize="!hasAuthority('ADMIN')" href="/pagos" class="btn btn-primary mx-1">Mis Pagos</a>
+            <a class="btn btn-primary mx-1" sec:authorize="hasAuthority('ADMIN')" href="/gestion-pagos">Gestión de Pagos</a>
+            <a class="btn btn-primary mx-1" sec:authorize="hasAuthority('ADMIN')"href="/gestion-alumnos">Gestión de Alumnos</a>
+            <a class="btn btn-primary dropdown-toggle dropdown-toggle" href="#" id="navbarDropdown" role="button"
+               data-bs-toggle="dropdown" aria-expanded="false">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
+                    <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
+                    <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
+                </svg>
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" href="/perfil">Perfil</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="/logout">Cerrar Sesión</a>
+            </div>
+        </nav>
+    </div>
+</header>
+<!-- Contenido principal -->
+<div class="container container-flex">
+    <h1 class="mb-4">Cronograma de Pagos</h1>
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <input type="text" class="form-control" placeholder="Buscar por concepto o mes..." onkeyup="buscarRegistros()">
+        </div>
+        <div class="col-md-3">
+            <select id="registros" class="form-select" onchange="cargarDatos()">
+                <option value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+            </select>
+        </div>
+        <div class="col-md-3 d-flex align-items-center">
+            <span class="me-2" id="switchLabel">Mis pagos</span>
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="toggleSwitch" onchange="cargarDatos()">
+            </div>
+        </div>
+    </div>
+    <table id="tablaPagos" class="table table-bordered table-hover">
+        <thead class="table-primary">
+        <tr>
+            <th>Concepto</th>
+            <th>Mes</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- Los datos se cargarán aquí dinámicamente -->
+        </tbody>
+    </table>
+</div>
+
+<!-- Footer -->
+<footer class="fixed-bottom p-3 bg-light text-center">
+    <span class="text-muted">Ing. Informática 2024 - Equipo de Desarrollo - UNP</span>
+</footer>
+
+<!-- Script integrado -->
+<script>
+    function cargarDatos() {
+        const cantidadRegistros = document.getElementById('registros').value;
+        const switchElement = document.getElementById('toggleSwitch');
+        const switchLabel = document.getElementById('switchLabel');
+        const mostrarPagos = switchElement.checked;
+        const estado = mostrarPagos ? 'PA' : 'PE';
+
+        switchLabel.textContent = mostrarPagos ? 'Mis pagos' : 'Mis deudas';
+
+        // Simulación de carga de datos (reemplazar con llamada real al backend)
+        const datos = [
+            { id: 1, concepto: 'Matrícula', mes: 'Enero', estado: 'PA', id_pago: 101 },
+            { id: 2, concepto: 'Mensualidad', mes: 'Febrero', estado: 'PE', id_pago: null },
+            { id: 3, concepto: 'Mensualidad', mes: 'Marzo', estado: 'PA', id_pago: 102 },
+        ];
+
+        actualizarTabla(datos.filter(item => item.estado === estado));
+    }
+
+    function buscarRegistros() {
+        const busqueda = document.querySelector('.form-control').value.toLowerCase();
+        // Aquí deberías hacer una llamada al backend con el término de búsqueda
+        // Por ahora, simularemos un filtrado local
+        const datosFiltrados = [
+            { id: 1, concepto: 'Matrícula', mes: 'Enero', estado: 'PA', id_pago: 101 },
+            { id: 2, concepto: 'Mensualidad', mes: 'Febrero', estado: 'PE', id_pago: null },
+        ].filter(item =>
+            item.concepto.toLowerCase().includes(busqueda) ||
+            item.mes.toLowerCase().includes(busqueda)
+        );
+
+        actualizarTabla(datosFiltrados);
+    }
+
+    function actualizarTabla(datos) {
+        const tbody = document.querySelector('#tablaPagos tbody');
+        tbody.innerHTML = '';
+        datos.forEach(item => {
+            const esPago = item.id_pago !== null;
+            const botonTexto = esPago ? 'Detalle' : 'Pagar';
+            const accion = esPago ? `toggleDetalle(${item.id_pago}, this)` : `redirigirPago(${item.id})`;
+            const row = `
+                <tr>
+                    <td>${item.concepto}</td>
+                    <td>${item.mes}</td>
+                    <td>${item.estado === 'PA' ? 'Pagado' : 'Pendiente'}</td>
+                    <td>
+                        <button class="btn btn-primary" onclick="${accion}">${botonTexto}</button>
+                    </td>
+                </tr>
+                <tr class="detalle-row" style="display:none;">
+                    <td colspan="4">
+                        <div class="detalle-pago"></div>
+                    </td>
+                </tr>
+            `;
+            tbody.innerHTML += row;
+        });
+    }
+
+    function toggleDetalle(idPago, button) {
+        const detalleRow = button.closest('tr').nextElementSibling;
+        const detalleDiv = detalleRow.querySelector('.detalle-pago');
+
+        if (detalleRow.style.display === 'none' || detalleRow.style.display === '') {
+            // Mostrar detalle
+            // Simulación de obtención de detalles del pago
+            const detallesPago = {
+                id: idPago,
+                FechaPago: '2024-03-15',
+                monto_total: 500.00,
+                estado: 'PA'
+            };
+
+            detalleDiv.innerHTML = `
+                <h3>Detalle del Pago</h3>
+                <p>ID: ${detallesPago.id}</p>
+                <p>Fecha de Pago: ${detallesPago.FechaPago}</p>
+                <p>Monto Total: $${detallesPago.monto_total.toFixed(2)}</p>
+                <p>Estado: ${detallesPago.estado === 'PA' ? 'Pagado' : 'Pendiente'}</p>
+            `;
+            detalleRow.style.display = 'table-row';
+            detalleDiv.style.display = 'block';
+        } else {
+            // Ocultar detalle
+            detalleRow.style.display = 'none';
+            detalleDiv.style.display = 'none';
+        }
+    }
+
+    function redirigirPago(idCronograma) {
+        // Simulación de redirección a la interfaz de pago
+        alert(`Redirigiendo a la interfaz de pago para el cronograma ID: ${idCronograma}`);
+    }
+
+    // Cargar datos iniciales
+    document.addEventListener('DOMContentLoaded', cargarDatos);
+</script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+</body>
+</html>
